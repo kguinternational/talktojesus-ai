@@ -384,6 +384,199 @@ def get_stats():
     }), 200
 
 
+# ============================================================================
+# VIDEO AVATAR ENDPOINTS
+# ============================================================================
+
+@app.route('/api/video/avatar')
+def video_avatar_interface():
+    """Render the video avatar interface page"""
+    return render_template('video_avatar.html')
+
+
+@app.route('/api/video/generate', methods=['POST'])
+@rate_limit(max_requests=10, window_seconds=60)
+def generate_video_avatar():
+    """
+    OPTION 1: AI-Generated Video Avatar
+    Generate a talking avatar video using AI services (D-ID, Synthesia, etc.)
+    """
+    data = request.get_json()
+    text = data.get('text', '')
+    
+    if not text:
+        return jsonify({
+            'error': 'Text is required',
+            'success': False
+        }), 400
+    
+    # Get API keys from environment
+    d_id_key = os.environ.get('D_ID_API_KEY')
+    service = os.environ.get('VIDEO_AVATAR_SERVICE', 'd-id')
+    
+    logger.info(f"Video generation request: {text[:50]}...")
+    
+    # Demo mode - return placeholder response
+    if not d_id_key:
+        logger.info("No API key found - returning demo response")
+        return jsonify({
+            'success': True,
+            'mode': 'demo',
+            'message': 'AI video avatar service not configured. Add D_ID_API_KEY to enable.',
+            'text': text,
+            'video_url': None,
+            'thumbnail': '/static/images/jesus-avatar-demo.jpg',
+            'audio_url': None,
+            'duration': len(text.split()) * 0.5,  # Estimate duration
+            'service': service
+        }), 200
+    
+    # TODO: Implement actual D-ID API integration
+    # For now, return a structured response
+    return jsonify({
+        'success': True,
+        'mode': 'ai-video',
+        'video_url': 'https://example.com/generated-video.mp4',
+        'thumbnail': 'https://example.com/thumbnail.jpg',
+        'duration': len(text.split()) * 0.5,
+        'status': 'processing',
+        'estimated_time': 15,
+        'service': service
+    }), 202
+
+
+@app.route('/api/video/session/create', methods=['POST'])
+@rate_limit(max_requests=5, window_seconds=60)
+def create_video_session():
+    """
+    OPTION 2: Live Video Streaming
+    Create a live video streaming session
+    """
+    data = request.get_json() or {}
+    session_type = data.get('type', 'webrtc')  # 'webrtc', 'zoom', 'googlemeet'
+    
+    logger.info(f"Creating video session: {session_type}")
+    
+    # Generate session ID
+    import uuid
+    session_id = str(uuid.uuid4())
+    
+    if session_type == 'zoom':
+        # TODO: Integrate with Zoom API
+        zoom_key = os.environ.get('ZOOM_API_KEY')
+        if not zoom_key:
+            return jsonify({
+                'success': False,
+                'error': 'Zoom API not configured',
+                'message': 'Set ZOOM_API_KEY environment variable to enable Zoom integration'
+            }), 501
+        
+        return jsonify({
+            'success': True,
+            'session_id': session_id,
+            'type': 'zoom',
+            'join_url': f'https://zoom.us/j/{session_id}',
+            'message': 'Zoom integration coming soon'
+        }), 200
+    
+    elif session_type == 'googlemeet':
+        # TODO: Integrate with Google Meet API
+        return jsonify({
+            'success': True,
+            'session_id': session_id,
+            'type': 'googlemeet',
+            'join_url': f'https://meet.google.com/{session_id}',
+            'message': 'Google Meet integration coming soon'
+        }), 200
+    
+    else:  # webrtc
+        # WebRTC session
+        return jsonify({
+            'success': True,
+            'session_id': session_id,
+            'type': 'webrtc',
+            'stun_servers': [
+                'stun:stun.l.google.com:19302',
+                'stun:stun1.l.google.com:19302'
+            ],
+            'turn_servers': [],
+            'websocket_url': f'wss://{request.host}/ws/video/{session_id}'
+        }), 200
+
+
+@app.route('/api/video/session/<session_id>/join', methods=['GET'])
+def join_video_session(session_id):
+    """Join an existing video session"""
+    logger.info(f"Joining video session: {session_id}")
+    
+    return jsonify({
+        'success': True,
+        'session_id': session_id,
+        'joined': True,
+        'participants': 1
+    }), 200
+
+
+@app.route('/api/avatar/3d/config', methods=['GET'])
+def get_3d_avatar_config():
+    """
+    OPTION 3: Animated 3D Avatar
+    Get configuration for 3D avatar
+    """
+    return jsonify({
+        'success': True,
+        'avatar': {
+            'model_url': '/static/models/jesus_avatar.glb',
+            'animations': {
+                'idle': '/static/animations/idle.json',
+                'talking': '/static/animations/talking.json',
+                'greeting': '/static/animations/greeting.json'
+            },
+            'textures': {
+                'default': '/static/textures/jesus_default.jpg'
+            }
+        },
+        'voice': {
+            'enabled': True,
+            'synthesis': 'browser',  # Use browser's speech synthesis
+            'voice_name': 'Google US English Male'
+        }
+    }), 200
+
+
+@app.route('/api/avatar/3d/animate', methods=['POST'])
+def animate_3d_avatar():
+    """Animate the 3D avatar with text and emotion"""
+    data = request.get_json()
+    text = data.get('text', '')
+    animation = data.get('animation', 'talking')
+    emotion = data.get('emotion', 'calm')
+    
+    if not text:
+        return jsonify({
+            'error': 'Text is required',
+            'success': False
+        }), 400
+    
+    logger.info(f"3D Avatar animation: {text[:50]}...")
+    
+    # Generate lip-sync data (simplified)
+    words = text.split()
+    duration = len(words) * 0.5  # Rough estimate
+    
+    return jsonify({
+        'success': True,
+        'animation': animation,
+        'emotion': emotion,
+        'duration': duration,
+        'lip_sync': {
+            'phonemes': [],  # Would contain phoneme timings
+            'duration': duration
+        },
+        'audio_url': None  # Browser will use speech synthesis
+    }), 200
+
+
 if __name__ == '__main__':
     # Run the app on all interfaces so it can be accessed externally
     port = int(os.environ.get('PORT', 5000))

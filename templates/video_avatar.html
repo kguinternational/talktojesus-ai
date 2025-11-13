@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Video Avatar - Talk to Jesus AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            flex: 1;
+            min-width: 200px;
+            padding: 15px 25px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+        
+        .tab:hover, .tab.active {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 20px;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            margin: 0 auto 20px;
+            background: #000;
+            border-radius: 10px;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+        
+        #avatarVideo, #streamVideo, #canvas3d {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        #canvas3d {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+        }
+        
+        .placeholder {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: white;
+            font-size: 1.5em;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 15px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        button:hover {
+            background: #5568d3;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        .config-panel {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .config-option {
+            margin: 10px 0;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        select, input[type="range"] {
+            width: 100%;
+            padding: 8px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎥 Interactive Video Avatar</h1>
+            <p>Experience Talk to Jesus AI with visual presence</p>
+        </header>
+        
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('option1')">
+                Option 1: AI-Generated Video
+            </div>
+            <div class="tab" onclick="switchTab('option2')">
+                Option 2: Live Streaming
+            </div>
+            <div class="tab" onclick="switchTab('option3')">
+                Option 3: 3D Animated Avatar
+            </div>
+        </div>
+        
+        <!-- OPTION 1: AI-Generated Video Avatar -->
+        <div id="option1" class="tab-content active">
+            <div class="demo-section">
+                <h2>🤖 AI-Generated Video Avatar</h2>
+                <p>Photorealistic talking avatar with AI-powered lip-syncing</p>
+                
+                <div class="video-container">
+                    <video id="avatarVideo" controls style="display: none;"></video>
+                    <div id="avatarPlaceholder" class="placeholder">
+                        <div>
+                            <img src="https://via.placeholder.com/400x300/667eea/ffffff?text=Jesus+Avatar" 
+                                 style="max-width: 100%; border-radius: 10px; margin-bottom: 20px;">
+                            <p>Enter your message below to generate a video response</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <div class="input-group" style="flex: 2;">
+                        <textarea id="aiVideoText" placeholder="Type your message... (e.g., 'Tell me about love and forgiveness')">Peace be with you, my child. How may I help you today?</textarea>
+                    </div>
+                    <div>
+                        <button onclick="generateAIVideo()" id="generateBtn">
+                            Generate Video Response
+                        </button>
+                    </div>
+                </div>
+                
+                <div id="aiVideoStatus" class="status"></div>
+                
+                <div class="feature-list">
+                    <div class="feature">
+                        <h3>✨ Photorealistic</h3>
+                        <p>High-quality video with natural movements and expressions</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🎤 Lip-Sync</h3>
+                        <p>Perfect synchronization between audio and mouth movements</p>
+                    </div>
+                    <div class="feature">
+                        <h3>⚡ AI-Powered</h3>
+                        <p>Leverages D-ID, Synthesia, or HeyGen technology</p>
+                    </div>
+                    <div class="feature">
+                        <h3>💾 Cacheable</h3>
+                        <p>Videos can be cached for frequently used responses</p>
+                    </div>
+                </div>
+                
+                <div class="config-panel">
+                    <h3>Configuration</h3>
+                    <div class="config-option">
+                        <label>Service:</label>
+                        <select id="videoService">
+                            <option value="d-id">D-ID (Recommended)</option>
+                            <option value="synthesia">Synthesia</option>
+                            <option value="heygen">HeyGen</option>
+                        </select>
+                    </div>
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong>Note:</strong> Requires API key. Set D_ID_API_KEY environment variable. 
+                        Cost: ~$0.10-0.30 per minute.
+                    </p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- OPTION 2: Live Video Streaming -->
+        <div id="option2" class="tab-content">
+            <div class="demo-section">
+                <h2>📹 Live Video Streaming</h2>
+                <p>Real-time video communication with WebRTC, Zoom, or Google Meet</p>
+                
+                <div class="video-container">
+                    <video id="streamVideo" autoplay playsinline style="display: none;"></video>
+                    <div id="streamPlaceholder" class="placeholder">
+                        <p>Start a video session to begin streaming</p>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button onclick="startWebRTC()">Start WebRTC Session</button>
+                    <button onclick="startZoom()">Create Zoom Meeting</button>
+                    <button onclick="startGoogleMeet()">Create Google Meet</button>
+                    <button onclick="stopStream()" style="background: #dc3545;">Stop Stream</button>
+                </div>
+                
+                <div id="streamStatus" class="status"></div>
+                
+                <div class="feature-list">
+                    <div class="feature">
+                        <h3>🔴 Real-Time</h3>
+                        <p>Low-latency video streaming (< 100ms)</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🌐 WebRTC</h3>
+                        <p>Browser-based peer-to-peer connection</p>
+                    </div>
+                    <div class="feature">
+                        <h3>📞 Platform Integration</h3>
+                        <p>Connect via Zoom or Google Meet</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🎙️ Two-Way Audio</h3>
+                        <p>Interactive conversations with voice input</p>
+                    </div>
+                </div>
+                
+                <div class="config-panel">
+                    <h3>Session Information</h3>
+                    <div id="sessionInfo">
+                        <p>No active session</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- OPTION 3: 3D Animated Avatar -->
+        <div id="option3" class="tab-content">
+            <div class="demo-section">
+                <h2>🎭 3D Animated Avatar</h2>
+                <p>Browser-based 3D character with real-time animation</p>
+                
+                <div class="video-container">
+                    <canvas id="canvas3d"></canvas>
+                </div>
+                
+                <div class="controls">
+                    <div class="input-group" style="flex: 2;">
+                        <textarea id="avatar3dText" placeholder="Type a message for the avatar to speak...">Peace be with you. How may I guide you on your spiritual journey today?</textarea>
+                    </div>
+                    <div>
+                        <button onclick="animate3DAvatar()">Animate & Speak</button>
+                    </div>
+                </div>
+                
+                <div id="avatar3dStatus" class="status"></div>
+                
+                <div class="feature-list">
+                    <div class="feature">
+                        <h3>🎨 Customizable</h3>
+                        <p>Adjust appearance, clothing, and style</p>
+                    </div>
+                    <div class="feature">
+                        <h3>💰 Free</h3>
+                        <p>No API costs - runs entirely in browser</p>
+                    </div>
+                    <div class="feature">
+                        <h3>⚡ Fast</h3>
+                        <p>Instant animation with no server processing</p>
+                    </div>
+                    <div class="feature">
+                        <h3>🔊 Speech Synthesis</h3>
+                        <p>Uses browser's text-to-speech engine</p>
+                    </div>
+                </div>
+                
+                <div class="config-panel">
+                    <h3>Avatar Controls</h3>
+                    <div class="config-option">
+                        <label>Animation Style:</label>
+                        <select id="animationStyle">
+                            <option value="talking">Talking</option>
+                            <option value="idle">Idle</option>
+                            <option value="greeting">Greeting</option>
+                            <option value="blessing">Blessing</option>
+                        </select>
+                    </div>
+                    <div class="config-option">
+                        <label>Voice Speed:</label>
+                        <input type="range" id="voiceSpeed" min="0.5" max="2" step="0.1" value="1">
+                        <span id="speedValue">1.0x</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div style="text-align: center; margin-top: 30px;">
+            <a href="/" style="color: white; text-decoration: none; padding: 10px 20px; background: rgba(255,255,255,0.2); border-radius: 5px;">
+                ← Back to Main Interface
+            </a>
+        </div>
+    </div>
+    
+    <script>
+        // Tab switching
+        function switchTab(tabId) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // OPTION 1: AI-Generated Video
+        async function generateAIVideo() {
+            const text = document.getElementById('aiVideoText').value;
+            const status = document.getElementById('aiVideoStatus');
+            const btn = document.getElementById('generateBtn');
+            
+            if (!text.trim()) {
+                showStatus('aiVideoStatus', 'Please enter a message', 'error');
+                return;
+            }
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="loading"></span> Generating...';
+            showStatus('aiVideoStatus', 'Generating video... This may take 10-30 seconds', 'info');
+            
+            try {
+                const response = await fetch('/api/video/generate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({text: text})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    if (data.mode === 'demo') {
+                        showStatus('aiVideoStatus', data.message + ' The feature is ready but requires API credentials to generate real videos.', 'info');
+                    } else {
+                        // Show video
+                        const video = document.getElementById('avatarVideo');
+                        const placeholder = document.getElementById('avatarPlaceholder');
+                        
+                        video.src = data.video_url;
+                        video.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        video.play();
+                        
+                        showStatus('aiVideoStatus', 'Video generated successfully!', 'success');
+                    }
+                } else {
+                    showStatus('aiVideoStatus', data.error || 'Failed to generate video', 'error');
+                }
+            } catch (error) {
+                showStatus('aiVideoStatus', 'Error: ' + error.message, 'error');
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = 'Generate Video Response';
+            }
+        }
+        
+        // OPTION 2: Live Video Streaming
+        let currentStream = null;
+        
+        async function startWebRTC() {
+            const status = document.getElementById('streamStatus');
+            const video = document.getElementById('streamVideo');
+            const placeholder = document.getElementById('streamPlaceholder');
+            
+            showStatus('streamStatus', 'Creating WebRTC session...', 'info');
+            
+            try {
+                const response = await fetch('/api/video/session/create', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({type: 'webrtc'})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Get user media
+                    currentStream = await navigator.mediaDevices.getUserMedia({video: true, audio: true});
+                    video.srcObject = currentStream;
+                    video.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    
+                    document.getElementById('sessionInfo').innerHTML = `
+                        <p><strong>Session ID:</strong> ${data.session_id}</p>
+                        <p><strong>Status:</strong> Connected</p>
+                        <p><strong>Type:</strong> ${data.type.toUpperCase()}</p>
+                    `;
+                    
+                    showStatus('streamStatus', 'WebRTC session started successfully!', 'success');
+                }
+            } catch (error) {
+                showStatus('streamStatus', 'Error: ' + error.message + '. Please allow camera access.', 'error');
+            }
+        }
+        
+        async function startZoom() {
+            const status = document.getElementById('streamStatus');
+            showStatus('streamStatus', 'Creating Zoom meeting...', 'info');
+            
+            try {
+                const response = await fetch('/api/video/session/create', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({type: 'zoom'})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('sessionInfo').innerHTML = `
+                        <p>${data.message}</p>
+                        <p><strong>Join URL:</strong> <a href="${data.join_url}" target="_blank">${data.join_url}</a></p>
+                    `;
+                    showStatus('streamStatus', 'Zoom meeting created! Click the join URL above.', 'success');
+                } else {
+                    showStatus('streamStatus', data.message || 'Zoom integration not configured', 'error');
+                }
+            } catch (error) {
+                showStatus('streamStatus', 'Error: ' + error.message, 'error');
+            }
+        }
+        
+        async function startGoogleMeet() {
+            const status = document.getElementById('streamStatus');
+            showStatus('streamStatus', 'Creating Google Meet...', 'info');
+            
+            try {
+                const response = await fetch('/api/video/session/create', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({type: 'googlemeet'})
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    document.getElementById('sessionInfo').innerHTML = `
+                        <p>${data.message}</p>
+                        <p><strong>Join URL:</strong> <a href="${data.join_url}" target="_blank">${data.join_url}</a></p>
+                    `;
+                    showStatus('streamStatus', 'Google Meet created! Click the join URL above.', 'success');
+                }
+            } catch (error) {
+                showStatus('streamStatus', 'Error: ' + error.message, 'error');
+            }
+        }
+        
+        function stopStream() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+                currentStream = null;
+                
+                const video = document.getElementById('streamVideo');
+                const placeholder = document.getElementById('streamPlaceholder');
+                video.style.display = 'none';
+                placeholder.style.display = 'flex';
+                
+                document.getElementById('sessionInfo').innerHTML = '<p>No active session</p>';
+                showStatus('streamStatus', 'Stream stopped', 'info');
+            }
+        }
+        
+        // OPTION 3: 3D Animated Avatar
+        function init3DAvatar() {
+            const canvas = document.getElementById('canvas3d');
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            // Draw placeholder 3D avatar representation
+            ctx.fillStyle = '#2a5298';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('3D Avatar Placeholder', canvas.width/2, canvas.height/2 - 20);
+            ctx.font = '16px Arial';
+            ctx.fillText('(Three.js integration coming soon)', canvas.width/2, canvas.height/2 + 10);
+        }
+        
+        async function animate3DAvatar() {
+            const text = document.getElementById('avatar3dText').value;
+            const status = document.getElementById('avatar3dStatus');
+            const style = document.getElementById('animationStyle').value;
+            
+            if (!text.trim()) {
+                showStatus('avatar3dStatus', 'Please enter a message', 'error');
+                return;
+            }
+            
+            showStatus('avatar3dStatus', 'Animating avatar...', 'info');
+            
+            try {
+                const response = await fetch('/api/avatar/3d/animate', {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({
+                        text: text,
+                        animation: style,
+                        emotion: 'calm'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Use browser speech synthesis
+                    const utterance = new SpeechSynthesisUtterance(text);
+                    utterance.rate = parseFloat(document.getElementById('voiceSpeed').value);
+                    utterance.pitch = 1.0;
+                    utterance.voice = speechSynthesis.getVoices().find(v => v.name.includes('Male')) || speechSynthesis.getVoices()[0];
+                    
+                    speechSynthesis.speak(utterance);
+                    
+                    showStatus('avatar3dStatus', `Avatar speaking with ${style} animation`, 'success');
+                    
+                    // Animate canvas (simple demonstration)
+                    animateCanvas();
+                }
+            } catch (error) {
+                showStatus('avatar3dStatus', 'Error: ' + error.message, 'error');
+            }
+        }
+        
+        function animateCanvas() {
+            const canvas = document.getElementById('canvas3d');
+            const ctx = canvas.getContext('2d');
+            let frame = 0;
+            
+            const animate = () => {
+                ctx.fillStyle = '#2a5298';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // Simple pulsing effect
+                const scale = 1 + Math.sin(frame * 0.1) * 0.05;
+                ctx.save();
+                ctx.translate(canvas.width/2, canvas.height/2);
+                ctx.scale(scale, scale);
+                
+                ctx.fillStyle = 'white';
+                ctx.font = '24px Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('🎤 Speaking...', 0, -20);
+                
+                ctx.restore();
+                
+                frame++;
+                if (frame < 100) {
+                    requestAnimationFrame(animate);
+                } else {
+                    init3DAvatar();
+                }
+            };
+            
+            animate();
+        }
+        
+        // Update voice speed display
+        document.getElementById('voiceSpeed').addEventListener('input', function() {
+            document.getElementById('speedValue').textContent = this.value + 'x';
+        });
+        
+        // Helper function
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+            element.style.display = 'block';
+            
+            if (type === 'success' || type === 'error') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 5000);
+            }
+        }
+        
+        // Initialize 3D canvas on load
+        window.addEventListener('load', init3DAvatar);
+        window.addEventListener('resize', init3DAvatar);
+    </script>
+</body>
+</html>

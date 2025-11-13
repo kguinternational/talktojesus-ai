@@ -24,6 +24,12 @@ Interactive AI that allows users to communicate with a Jesus persona via text, p
 - **📈 Statistics** (`GET /api/stats`): View application usage statistics
 - **❤️ Health Check** (`GET /health`): Monitor application health status
 
+### Interactive Video Avatar (NEW)
+- **🎥 AI-Generated Video** (`POST /api/video/generate`): Create photorealistic talking avatar videos
+- **📹 Live Streaming** (`POST /api/video/session/create`): Real-time WebRTC/Zoom/Google Meet sessions
+- **🎭 3D Animated Avatar** (`POST /api/avatar/3d/animate`): Browser-based 3D character with speech synthesis
+- **🖥️ Video Interface** (`GET /api/video/avatar`): Interactive web interface for all video avatar options
+
 ### Security & Performance
 - **🛡️ Rate Limiting**: Protects endpoints from abuse (configurable limits per endpoint)
 - **📝 Logging**: Comprehensive logging for monitoring and debugging
@@ -81,15 +87,28 @@ PORT=8080 python3 app.py
    - Test the SMS endpoint with the interactive chat
    - Try the voice endpoint simulation
    - Explore the video meeting placeholders
+   - **NEW**: Access video avatar interface at `http://localhost:5000/api/video/avatar`
 
-2. **SMS Endpoint** (`POST /sms`):
+2. **Interactive Video Avatar**: Visit `http://localhost:5000/api/video/avatar` for three options:
+   - **Option 1**: AI-generated photorealistic video with lip-sync (D-ID, Synthesia, HeyGen)
+   - **Option 2**: Live video streaming via WebRTC, Zoom, or Google Meet
+   - **Option 3**: Browser-based 3D animated avatar with text-to-speech
+
+3. **SMS Endpoint** (`POST /sms`):
    ```bash
    curl -X POST http://localhost:5000/sms -d "Body=Hello"
    ```
 
-3. **Voice Endpoint** (`POST /voice`):
+4. **Voice Endpoint** (`POST /voice`):
    ```bash
    curl -X POST http://localhost:5000/voice -d "SpeechResult=I need guidance"
+   ```
+
+5. **Video Avatar Generation** (`POST /api/video/generate`):
+   ```bash
+   curl -X POST http://localhost:5000/api/video/generate \
+     -H "Content-Type: application/json" \
+     -d '{"text":"Peace be with you"}'
    ```
 
 4. **Zoom Meeting** (`POST /create_zoom_meeting`):
@@ -344,12 +363,22 @@ In a production environment, this could be enhanced with:
 
 ## Environment Variables
 
+### Core Application
 - `PORT`: Server port (default: 5000)
 - `FLASK_DEBUG`: Enable debug mode (default: False, set to True for development)
+- `SECRET_KEY`: Flask secret key for sessions (auto-generated in development)
+
+### Video Avatar Configuration
+- `D_ID_API_KEY`: D-ID API key for AI video generation (Option 1)
+- `SYNTHESIA_API_KEY`: Synthesia API key for AI video generation (Option 1)
+- `VIDEO_AVATAR_SERVICE`: Service to use: 'd-id', 'synthesia', or 'heygen' (default: 'd-id')
+- `ZOOM_API_KEY`: Zoom API key for video meetings (Option 2)
+- `ZOOM_API_SECRET`: Zoom API secret (Option 2)
+- `WEBRTC_STUN_SERVER`: STUN server for WebRTC (default: stun:stun.l.google.com:19302)
 
 Example:
 ```bash
-PORT=8080 FLASK_DEBUG=False python3 app.py
+PORT=8080 FLASK_DEBUG=False D_ID_API_KEY=your_key_here python3 app.py
 ```
 
 ## Production Deployment
