@@ -1,0 +1,20 @@
+[MASTER]
+ignore=.git,__pycache__,venv,env,.venv
+
+[MESSAGES CONTROL]
+disable=
+    C0111,  # missing-docstring
+    C0103,  # invalid-name
+    R0903,  # too-few-public-methods
+    R0913,  # too-many-arguments
+
+[FORMAT]
+max-line-length=120
+indent-string='    '
+
+[BASIC]
+good-names=i,j,k,ex,Run,_,id,pk,db,app
+
+[DESIGN]
+max-args=7
+max-attributes=10

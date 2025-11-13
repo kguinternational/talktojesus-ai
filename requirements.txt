@@ -1,3 +1,31 @@
-Flask>=2.0
-Twilio>=7.0
-requests>=2.25
+# Core Framework
+Flask>=2.0.0,<3.0.0
+Werkzeug>=2.0.0,<3.0.0
+
+# Twilio for SMS/Voice
+twilio>=7.0.0,<9.0.0
+
+# HTTP Requests
+requests>=2.25.0,<3.0.0
+
+# Rate Limiting
+Flask-Limiter>=2.0.0,<4.0.0
+
+# CORS Support
+Flask-CORS>=3.0.0,<5.0.0
+
+# Environment Variables
+python-dotenv>=0.19.0,<2.0.0
+
+# Production Server
+gunicorn>=20.0.0,<22.0.0
+
+# Testing (optional)
+pytest>=7.0.0,<8.0.0
+pytest-flask>=1.2.0,<2.0.0
+pytest-cov>=3.0.0,<5.0.0
+
+# Code Quality (optional)
+black>=22.0.0,<24.0.0
+pylint>=2.12.0,<4.0.0
+mypy>=0.950,<2.0.0
