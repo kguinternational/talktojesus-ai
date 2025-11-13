@@ -51,10 +51,19 @@ pip install -r requirements.txt
 
 ### Running the Application
 
-Start the Flask development server:
+#### Option 1: Using the launch script (Recommended)
+```bash
+./run.sh
+```
 
+#### Option 2: Direct Python execution
 ```bash
 python3 app.py
+```
+
+#### Option 3: Using Docker
+```bash
+docker-compose up -d
 ```
 
 The application will start on `http://localhost:5000`
@@ -63,6 +72,8 @@ You can also specify a custom port:
 ```bash
 PORT=8080 python3 app.py
 ```
+
+**Troubleshooting:** If you can't access localhost:5000, see [TROUBLESHOOTING.md](TROUBLESHOOTING.md) for solutions.
 
 ### Using the Application
 
@@ -255,18 +266,50 @@ Get application statistics.
 }
 ```
 
+## Docker Deployment
+
+The application includes Docker support for easier deployment:
+
+### Quick Start with Docker
+
+```bash
+# Using Docker Compose (recommended)
+docker-compose up -d
+
+# Or using Docker directly
+docker build -t talktojesus-ai .
+docker run -d -p 5000:5000 --name talktojesus-ai talktojesus-ai
+```
+
+Access the application at http://localhost:5000
+
+For detailed Docker instructions, environment variables, and troubleshooting, see [DOCKER.md](DOCKER.md).
+
+### Docker Benefits
+- ✅ Consistent environment across all platforms
+- ✅ No dependency conflicts
+- ✅ One-command deployment
+- ✅ Includes health checks
+- ✅ Production-ready configuration
+
 ## Development
 
 ### Project Structure
 
 ```
 talktojesus-ai/
-├── app.py              # Main Flask application
-├── requirements.txt    # Python dependencies
-├── templates/          # HTML templates
-│   └── index.html     # Interactive web interface
-├── static/            # Static assets (CSS, JS, images)
-└── README.md          # This file
+├── app.py                  # Main Flask application
+├── requirements.txt        # Python dependencies
+├── Dockerfile              # Docker configuration
+├── docker-compose.yml      # Docker Compose configuration
+├── .dockerignore          # Docker ignore file
+├── run.sh                 # Launch script
+├── templates/             # HTML templates
+│   └── index.html        # Interactive web interface
+├── static/               # Static assets (CSS, JS, images)
+├── README.md             # This file
+├── TROUBLESHOOTING.md    # Troubleshooting guide
+└── DOCKER.md             # Docker deployment guide
 ```
 
 ### AI Response Generation
