@@ -195,6 +195,93 @@
             font-family: 'Courier New', monospace;
         }
         
+        .devotional-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .devotional-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .devotional-card .verse {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+        }
+        
+        .devotional-card .reflection {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover, .tab-button.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .verse-display {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #333;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+        
         footer {
             text-align: center;
             color: white;
@@ -291,9 +378,75 @@
             </div>
         </div>
         
+        <div class="demo-section">
+            <h2>📿 Submit a Prayer Request</h2>
+            <p>Share what's on your heart, and receive spiritual guidance and encouragement:</p>
+            
+            <div class="input-group" style="margin-top: 20px;">
+                <input type="text" id="prayerName" placeholder="Your name (optional)..." value="Anonymous">
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <textarea id="prayerText" placeholder="Share your prayer request..."></textarea>
+            </div>
+            
+            <button onclick="submitPrayer()" style="margin-top: 15px; width: 100%;">Submit Prayer Request</button>
+            
+            <div id="prayerStatus" class="status"></div>
+            <div id="prayerResponse" style="display: none; margin-top: 15px;"></div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>POST /api/prayer</code><br>
+                <strong>New Feature:</strong> AI-powered prayer support with sentiment detection
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📖 Daily Devotional</h2>
+            <p>Receive daily spiritual guidance and biblical wisdom:</p>
+            
+            <button onclick="getDevotion()" style="margin-top: 15px;">Get Today's Devotional</button>
+            
+            <div id="devotionalContent" style="display: none; margin-top: 20px;"></div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>GET /api/devotional</code><br>
+                <strong>New Feature:</strong> Daily devotional messages with Bible verses and reflections
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>✝️ Bible Verse Inspiration <span class="badge">NEW</span></h2>
+            <p>Get inspired with Bible verses by category:</p>
+            
+            <div class="tab-container">
+                <button class="tab-button" onclick="getVerseByCategory('love')">Love</button>
+                <button class="tab-button" onclick="getVerseByCategory('forgiveness')">Forgiveness</button>
+                <button class="tab-button" onclick="getVerseByCategory('faith')">Faith</button>
+                <button class="tab-button" onclick="getVerseByCategory('guidance')">Guidance</button>
+                <button class="tab-button" onclick="getVerseByCategory('strength')">Strength</button>
+                <button class="tab-button" onclick="getVerseByCategory('peace')">Peace</button>
+                <button class="tab-button" onclick="getVerseByCategory('hope')">Hope</button>
+                <button class="tab-button active" onclick="getVerseByCategory('')">Random</button>
+            </div>
+            
+            <div id="verseDisplay" class="verse-display">
+                Click a category above to receive biblical inspiration
+            </div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>GET /api/verse?category={category}</code><br>
+                <strong>New Feature:</strong> Categorized Bible verses with full scripture references
+            </div>
+        </div>
+        
         <footer>
             <p>Built with Flask, Twilio, and ❤️</p>
             <p style="margin-top: 10px; opacity: 0.8;">A spiritual AI companion for meaningful conversations</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">
+                <strong>New Features:</strong> Sentiment Detection • Prayer Requests • Daily Devotionals • 
+                Bible Verse Library • Rate Limiting • Conversation History
+            </p>
         </footer>
     </div>
     
@@ -439,6 +592,99 @@
             const div = document.createElement('div');
             div.textContent = text;
             return div.innerHTML;
+        }
+        
+        // New feature: Submit prayer request
+        function submitPrayer() {
+            const name = document.getElementById('prayerName').value.trim() || 'Anonymous';
+            const prayer = document.getElementById('prayerText').value.trim();
+            
+            if (!prayer) {
+                showStatus('prayerStatus', 'Please enter your prayer request', 'error');
+                return;
+            }
+            
+            fetch('/api/prayer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, prayer: prayer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStatus('prayerStatus', data.message, 'success');
+                    const responseDiv = document.getElementById('prayerResponse');
+                    responseDiv.innerHTML = `
+                        <div class="devotional-card">
+                            <h3>🙏 Response</h3>
+                            <p class="verse">${escapeHtml(data.response)}</p>
+                            <p class="reflection">${escapeHtml(data.encouragement)}</p>
+                        </div>
+                    `;
+                    responseDiv.style.display = 'block';
+                    document.getElementById('prayerText').value = '';
+                } else {
+                    showStatus('prayerStatus', data.error || 'Failed to submit prayer', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('prayerStatus', 'Failed to submit prayer request', 'error');
+            });
+        }
+        
+        // New feature: Get daily devotional
+        function getDevotion() {
+            fetch('/api/devotional')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const devotional = data.devotional;
+                    const contentDiv = document.getElementById('devotionalContent');
+                    contentDiv.innerHTML = `
+                        <div class="devotional-card">
+                            <h3>📖 ${escapeHtml(devotional.title)}</h3>
+                            <p><strong>Scripture:</strong> ${escapeHtml(devotional.verse)}</p>
+                            <p class="verse">"${escapeHtml(devotional.content)}"</p>
+                            <p class="reflection"><strong>Reflection:</strong> ${escapeHtml(devotional.reflection)}</p>
+                        </div>
+                    `;
+                    contentDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load devotional');
+            });
+        }
+        
+        // New feature: Get Bible verse by category
+        function getVerseByCategory(category) {
+            const url = category ? `/api/verse?category=${category}` : '/api/verse';
+            
+            // Update active tab
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const verseDiv = document.getElementById('verseDisplay');
+                    verseDiv.innerHTML = `
+                        <strong>${category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Inspiration'}:</strong><br>
+                        ${escapeHtml(data.verse)}
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('verseDisplay').textContent = 'Failed to load verse';
+            });
         }
     </script>
 </body>

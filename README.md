@@ -4,10 +4,30 @@ Interactive AI that allows users to communicate with a Jesus persona via text, p
 
 ## Features
 
+### Core Features
 - **💬 SMS Messaging**: Send text messages and receive spiritual guidance through SMS powered by Twilio integration
 - **📞 Voice Calls**: Have spoken conversations with voice transcription and text-to-speech responses via Twilio Voice
 - **🎥 Video Meetings**: Schedule Zoom or Google Meet sessions (placeholder implementation - requires API credentials)
 - **🌐 Interactive Web Interface**: Test all endpoints directly from your browser
+
+### Enhanced AI Capabilities (NEW)
+- **🎭 Sentiment Detection**: AI detects emotional tone (sadness, anxiety, anger, joy) and responds with appropriate comfort
+- **📖 Bible Verse Integration**: All responses include actual Bible verse references with chapter and verse citations
+- **💭 Conversation History**: Tracks conversation context for more personalized responses
+- **🧠 Expanded Response Categories**: Love, forgiveness, faith, guidance, strength, peace, hope, and more
+
+### New API Endpoints
+- **📿 Prayer Requests** (`POST /api/prayer`): Submit prayer requests and receive spiritual guidance
+- **📚 Daily Devotionals** (`GET /api/devotional`): Get daily devotional messages with scripture and reflections
+- **✝️ Bible Verse Library** (`GET /api/verse`): Access categorized Bible verses by topic
+- **📊 Conversation History** (`GET /api/conversation/history`): View past conversation history
+- **📈 Statistics** (`GET /api/stats`): View application usage statistics
+- **❤️ Health Check** (`GET /health`): Monitor application health status
+
+### Security & Performance
+- **🛡️ Rate Limiting**: Protects endpoints from abuse (configurable limits per endpoint)
+- **📝 Logging**: Comprehensive logging for monitoring and debugging
+- **🔒 Session Management**: Secure session handling for user tracking
 
 ## Quick Start
 
@@ -77,18 +97,23 @@ PORT=8080 python3 app.py
 
 ## API Endpoints
 
-### `GET /`
+### Core Endpoints
+
+#### `GET /`
 Renders the interactive web interface for testing all endpoints.
 
-### `POST /sms`
-Handles incoming SMS messages from Twilio.
+#### `POST /sms`
+Handles incoming SMS messages from Twilio with sentiment detection and conversation history.
 
 **Parameters:**
 - `Body` (form data): The text message content
+- `From` (form data): Phone number (automatically tracked)
 
 **Response:** TwiML XML with message response
 
-### `POST /voice`
+**Rate Limit:** 20 requests per minute per phone number
+
+#### `POST /voice`
 Handles incoming voice calls with speech recognition from Twilio.
 
 **Parameters:**
@@ -96,7 +121,7 @@ Handles incoming voice calls with speech recognition from Twilio.
 
 **Response:** TwiML XML with spoken response
 
-### `POST /create_zoom_meeting`
+#### `POST /create_zoom_meeting`
 Creates a Zoom meeting (placeholder - requires Zoom API credentials).
 
 **Request Body:**
@@ -113,13 +138,120 @@ Creates a Zoom meeting (placeholder - requires Zoom API credentials).
 }
 ```
 
-### `POST /create_google_meet`
+#### `POST /create_google_meet`
 Creates a Google Meet (placeholder - requires Google Workspace API credentials).
 
 **Response:**
 ```json
 {
   "message": "Status message"
+}
+```
+
+### New Enhanced Endpoints
+
+#### `GET /health`
+Health check endpoint for monitoring application status.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "service": "Talk to Jesus AI",
+  "timestamp": "2024-01-01T12:00:00",
+  "version": "1.1.0"
+}
+```
+
+#### `POST /api/prayer`
+Submit a prayer request and receive spiritual guidance.
+
+**Request Body:**
+```json
+{
+  "name": "John Doe",
+  "prayer": "Please pray for my family's health"
+}
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "message": "Your prayer has been received, my child.",
+  "response": "AI-generated spiritual guidance with Bible verse",
+  "encouragement": "Continue to pray without ceasing..."
+}
+```
+
+**Rate Limit:** 10 requests per minute
+
+#### `GET /api/devotional`
+Get today's daily devotional message.
+
+**Response:**
+```json
+{
+  "success": true,
+  "devotional": {
+    "title": "Walk in Love",
+    "verse": "John 13:34",
+    "content": "A new command I give you...",
+    "reflection": "Today, let love be your guide..."
+  },
+  "date": "2024-01-01"
+}
+```
+
+#### `GET /api/verse?category={category}`
+Get a Bible verse by category or random if no category specified.
+
+**Parameters:**
+- `category` (optional): love, forgiveness, faith, guidance, strength, peace, hope
+
+**Response:**
+```json
+{
+  "success": true,
+  "verse": "Love one another as I have loved you. (John 13:34)",
+  "category": "love"
+}
+```
+
+#### `GET /api/conversation/history?user_id={user_id}`
+Get conversation history for a user.
+
+**Parameters:**
+- `user_id` (optional): User identifier (defaults to IP address)
+
+**Response:**
+```json
+{
+  "success": true,
+  "user_id": "user123",
+  "message_count": 5,
+  "history": [
+    {
+      "timestamp": "2024-01-01T12:00:00",
+      "message": "Hello"
+    }
+  ]
+}
+```
+
+#### `GET /api/stats`
+Get application statistics.
+
+**Response:**
+```json
+{
+  "success": true,
+  "statistics": {
+    "total_conversations": 150,
+    "active_users": 25,
+    "available_categories": ["love", "faith", "hope", ...],
+    "devotionals_available": 3
+  }
 }
 ```
 
@@ -139,15 +271,33 @@ talktojesus-ai/
 
 ### AI Response Generation
 
-The `generate_ai_response()` function in `app.py` provides keyword-based responses in the persona of Jesus. In a production environment, this would be replaced with calls to a language model API (OpenAI, Anthropic, etc.).
+The enhanced `generate_ai_response()` function now includes:
 
-Current response categories:
-- Greetings
-- Questions about love
-- Questions about forgiveness
-- Questions about faith
-- Questions about help/guidance
-- General spiritual wisdom
+**Sentiment Detection:**
+- Automatically detects emotional state (sadness, anxiety, anger, joy)
+- Responds with appropriate comfort and encouragement
+- Includes relevant Bible verses for each emotional state
+
+**Response Categories with Bible Verses:**
+- Love (John 13:34, 1 Corinthians 13:4, etc.)
+- Forgiveness (Matthew 6:14, Psalm 103:12, etc.)
+- Faith (Mark 9:23, Hebrews 11:1, etc.)
+- Guidance (Matthew 28:20, John 14:6, etc.)
+- Strength (Philippians 4:13, Psalm 28:7, etc.)
+- Peace (John 14:27, Philippians 4:6, etc.)
+- Hope (Jeremiah 29:11, Romans 15:13, etc.)
+- Prayer (Matthew 6:6)
+
+**Conversation Context:**
+- Tracks conversation history per user
+- Maintains context across messages
+- Stores last 10 messages per user
+
+In a production environment, this could be enhanced with:
+- Integration with OpenAI GPT, Anthropic Claude, or other LLMs
+- More sophisticated sentiment analysis
+- Persistent database storage for conversations
+- Advanced natural language understanding
 
 ## Environment Variables
 
