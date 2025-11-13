@@ -111,4 +111,5 @@ def create_google_meet():
 if __name__ == '__main__':
     # Run the app on all interfaces so it can be accessed externally
     port = int(os.environ.get('PORT', 5000))
-    app.run(host='0.0.0.0', port=port, debug=True)
+    debug = os.environ.get('FLASK_DEBUG', 'False').lower() in ('true', '1', 'yes')
+    app.run(host='0.0.0.0', port=port, debug=debug)

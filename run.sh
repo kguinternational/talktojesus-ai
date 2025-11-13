@@ -31,6 +31,11 @@ if [ -z "$PORT" ]; then
     export PORT=5000
 fi
 
+# Enable debug mode for development (set FLASK_DEBUG=False for production)
+if [ -z "$FLASK_DEBUG" ]; then
+    export FLASK_DEBUG=True
+fi
+
 echo "🚀 Starting Flask application on port $PORT..."
 echo ""
 echo "📱 Access the web interface at: http://localhost:$PORT"

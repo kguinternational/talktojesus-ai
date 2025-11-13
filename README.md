@@ -149,27 +149,41 @@ Current response categories:
 - Questions about help/guidance
 - General spiritual wisdom
 
+## Environment Variables
+
+- `PORT`: Server port (default: 5000)
+- `FLASK_DEBUG`: Enable debug mode (default: False, set to True for development)
+
+Example:
+```bash
+PORT=8080 FLASK_DEBUG=False python3 app.py
+```
+
 ## Production Deployment
 
 For production deployment, consider:
 
-1. **Use a production WSGI server** (e.g., Gunicorn):
+1. **Disable debug mode** by setting `FLASK_DEBUG=False` or not setting it at all
+
+2. **Use a production WSGI server** (e.g., Gunicorn):
    ```bash
    pip install gunicorn
-   gunicorn -w 4 -b 0.0.0.0:5000 app:app
+   FLASK_DEBUG=False gunicorn -w 4 -b 0.0.0.0:5000 app:app
    ```
 
-2. **Set up Twilio webhooks** pointing to your deployed endpoints:
+3. **Set up Twilio webhooks** pointing to your deployed endpoints:
    - SMS webhook: `https://yourdomain.com/sms`
    - Voice webhook: `https://yourdomain.com/voice`
 
-3. **Configure API credentials** for Zoom and Google Meet integrations
+4. **Configure API credentials** for Zoom and Google Meet integrations
 
-4. **Integrate with a real LLM** for better AI responses (OpenAI GPT, Anthropic Claude, etc.)
+5. **Integrate with a real LLM** for better AI responses (OpenAI GPT, Anthropic Claude, etc.)
 
-5. **Add authentication** and rate limiting for API endpoints
+6. **Add authentication** and rate limiting for API endpoints
 
-6. **Use environment variables** for sensitive configuration
+7. **Use environment variables** for sensitive configuration
+
+8. **Enable HTTPS** with SSL/TLS certificates
 
 ## License
 
