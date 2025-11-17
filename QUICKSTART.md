@@ -2,24 +2,27 @@
 
 ## 🚀 Fastest Way to Get Started
 
-### Option 1: Docker + ngrok (Recommended for Sharing)
+### Option 1: Docker with Built-in ngrok (Recommended)
 
 ```bash
 # 1. Clone and navigate to the repository
 git clone https://github.com/kguinternational/talktojesus-ai.git
 cd talktojesus-ai
 
-# 2. Start with Docker
+# 2. Setup environment file
+cp .env.example .env
+
+# 3. Edit .env and add your ngrok authtoken
+# Get token from: https://dashboard.ngrok.com/get-started/your-authtoken
+nano .env  # or use your preferred editor
+
+# 4. Start everything with one command (Flask + ngrok)
 docker-compose up -d
 
-# 3. Install and setup ngrok
-./setup_ngrok.sh
-ngrok config add-authtoken YOUR_AUTHTOKEN
+# 5. View logs to see your public ngrok URL
+docker-compose logs -f
 
-# 4. Expose your server
-ngrok http 5000
-
-# Your app is now accessible via the ngrok URL!
+# Your app is now running with a public URL!
 ```
 
 ### Option 2: Local Python

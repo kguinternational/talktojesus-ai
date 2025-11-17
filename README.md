@@ -13,24 +13,43 @@ Interactive AI that allows users to communicate with a Jesus persona via text, p
 
 ## Quick Start with Docker (Recommended)
 
-The easiest way to run the application is using Docker:
+The easiest way to run the application is using Docker with built-in ngrok support:
+
+### Option 1: Docker with ngrok (Get Public URL)
 
 ```bash
 # Clone the repository
 git clone https://github.com/kguinternational/talktojesus-ai.git
 cd talktojesus-ai
 
-# Build and run with Docker Compose
+# Copy and configure environment file
+cp .env.example .env
+# Edit .env and add your NGROK_AUTHTOKEN (get from https://dashboard.ngrok.com)
+
+# Build and run with Docker Compose (includes ngrok)
 docker-compose up -d
 
-# View logs
+# View logs to see your ngrok public URL
 docker-compose logs -f
 
 # Stop the application
 docker-compose down
 ```
 
-The application will be accessible at `http://localhost:5000`.
+### Option 2: Docker without ngrok
+
+```bash
+# Run without ngrok authtoken
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+```
+
+**Access Points:**
+- Flask App: `http://localhost:5000`
+- ngrok Web UI: `http://localhost:4040` (if ngrok authtoken is configured)
+- Public URL: Shown in logs when ngrok is enabled
 
 ## Local Setup and Installation (Without Docker)
 
@@ -227,17 +246,26 @@ Now you can send SMS messages or make calls to your Twilio number, and they'll b
 docker build -t talktojesus-ai .
 ```
 
-### Run the container:
+### Run the container with ngrok:
 ```bash
+# With ngrok authtoken
+docker run -d \
+  -p 5000:5000 \
+  -p 4040:4040 \
+  -e NGROK_AUTHTOKEN=your_token_here \
+  --name talktojesus-ai \
+  talktojesus-ai
+
+# Without ngrok (local only)
 docker run -d -p 5000:5000 --name talktojesus-ai talktojesus-ai
 ```
 
 ### Using Docker Compose (Recommended):
 ```bash
-# Start the application
+# Start with ngrok (set NGROK_AUTHTOKEN in .env first)
 docker-compose up -d
 
-# View logs
+# View logs (including ngrok public URL)
 docker-compose logs -f
 
 # Stop the application
@@ -250,6 +278,15 @@ docker-compose up -d --build
 ### Access the container:
 ```bash
 docker exec -it talktojesus-ai /bin/bash
+```
+
+### Check ngrok status inside container:
+```bash
+# View ngrok web interface
+curl http://localhost:4040/api/tunnels
+
+# Or open in browser
+open http://localhost:4040
 ```
 
 ## Project Structure
