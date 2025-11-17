@@ -131,6 +131,8 @@ talktojesus-ai/
 
 The application runs in debug mode by default when using `python app.py`. Any changes to the code will automatically reload the server.
 
+⚠️ **Security Warning**: Debug mode is enabled for local development convenience. **Never use debug mode in production** as it can expose sensitive information and allow arbitrary code execution. For production deployment, use a production WSGI server like Gunicorn or uWSGI with debug mode disabled.
+
 ## Future Enhancements
 
 - Integrate with actual AI language models for Jesus persona responses
