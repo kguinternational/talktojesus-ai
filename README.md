@@ -40,11 +40,21 @@ pip install -r requirements.txt
 python app.py
 ```
 
-The application will start on `http://127.0.0.1:5000` by default.
+The application will start on `http://0.0.0.0:5000`, making it accessible at:
+- `http://localhost:5000` (from the same machine)
+- `http://127.0.0.1:5000` (from the same machine)
+- `http://<your-ip-address>:5000` (from other machines on your network)
+
+Visit `http://localhost:5000` in your browser to verify the API is running.
 
 ## API Endpoints
 
 The application provides the following endpoints:
+
+### Root Endpoint
+- **URL**: `/`
+- **Method**: `GET`
+- **Description**: Returns API status and available endpoints
 
 ### SMS Endpoint
 - **URL**: `/sms`
@@ -71,17 +81,23 @@ The application provides the following endpoints:
 
 ## Testing Locally
 
+You can test the root endpoint to verify the API is running:
+
+```bash
+curl http://localhost:5000/
+```
+
 You can test the SMS endpoint using curl:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/sms \
+curl -X POST http://localhost:5000/sms \
   -d "Body=Hello Jesus"
 ```
 
 You can test the voice endpoint:
 
 ```bash
-curl -X POST http://127.0.0.1:5000/voice \
+curl -X POST http://localhost:5000/voice \
   -d "SpeechResult=Hello Jesus"
 ```
 

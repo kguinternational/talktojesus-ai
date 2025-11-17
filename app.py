@@ -46,5 +46,19 @@ def create_google_meet():
     return jsonify({'message': 'Google Meet creation not implemented in this skeleton.'}), 501
 
 
+@app.route('/')
+def index():
+    """Root endpoint to verify the application is running."""
+    return jsonify({
+        'message': 'Talk to Jesus AI API is running',
+        'endpoints': {
+            '/sms': 'POST - Handle incoming SMS messages',
+            '/voice': 'POST - Handle incoming voice calls',
+            '/create_zoom_meeting': 'POST - Create Zoom meeting (not implemented)',
+            '/create_google_meet': 'POST - Create Google Meet (not implemented)'
+        }
+    })
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='0.0.0.0', debug=True)
