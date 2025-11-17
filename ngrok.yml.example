@@ -1,0 +1,26 @@
+# ngrok configuration file example
+# Copy this to ~/.config/ngrok/ngrok.yml and add your authtoken
+
+version: "2"
+authtoken: YOUR_AUTHTOKEN_HERE
+
+tunnels:
+  talktojesus:
+    proto: http
+    addr: 5000
+    bind_tls: true
+    inspect: true
+    # Optional: Custom subdomain (requires paid plan)
+    # subdomain: talktojesus
+    
+  # You can define multiple tunnels
+  # talktojesus-dev:
+  #   proto: http
+  #   addr: 5000
+  #   hostname: your-custom-domain.com
+
+# Web interface
+web_addr: localhost:4040
+
+# Region (us, eu, ap, au, sa, jp, in)
+region: us

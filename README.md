@@ -7,7 +7,32 @@ Interactive AI that allows users to communicate with a Jesus persona via text, p
 - Python 3.8 or higher
 - pip (Python package installer)
 
-## Local Setup and Installation
+**OR**
+
+- Docker and Docker Compose (for containerized deployment)
+
+## Quick Start with Docker (Recommended)
+
+The easiest way to run the application is using Docker:
+
+```bash
+# Clone the repository
+git clone https://github.com/kguinternational/talktojesus-ai.git
+cd talktojesus-ai
+
+# Build and run with Docker Compose
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+```
+
+The application will be accessible at `http://localhost:5000`.
+
+## Local Setup and Installation (Without Docker)
 
 ### 1. Clone the Repository
 
@@ -103,28 +128,144 @@ curl -X POST http://localhost:5000/voice \
 
 ## Configuration
 
-### Twilio Setup (Optional for Local Testing)
+## Exposing Your Local Server with ngrok
 
-To use Twilio features, you'll need:
-1. A Twilio account (sign up at https://www.twilio.com)
-2. Twilio phone numbers configured for SMS and Voice
-3. Webhook URLs pointing to your endpoints
+To share your local development server with others or to use Twilio webhooks, you need to expose it to the internet using ngrok.
 
-For local development with Twilio, you can use tools like [ngrok](https://ngrok.com/) to expose your local server:
+### Install ngrok
 
+**Option 1: Using the setup script (Linux/macOS)**
 ```bash
+./setup_ngrok.sh
+```
+
+**Option 2: Manual installation**
+
+On **Linux**:
+```bash
+curl -sL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz -o ngrok.tgz
+tar -xzf ngrok.tgz
+sudo mv ngrok /usr/local/bin/
+```
+
+On **macOS**:
+```bash
+brew install ngrok/ngrok/ngrok
+```
+
+On **Windows**:
+Download from [ngrok.com/download](https://ngrok.com/download) and add to PATH.
+
+### Configure ngrok
+
+1. **Sign up** for a free account at [ngrok.com](https://dashboard.ngrok.com/signup)
+2. **Get your authtoken** from [your dashboard](https://dashboard.ngrok.com/get-started/your-authtoken)
+3. **Add the authtoken**:
+```bash
+ngrok config add-authtoken YOUR_AUTHTOKEN_HERE
+```
+
+### Start ngrok Tunnel
+
+**Method 1: Simple command**
+```bash
+# Start your Flask app first
+python app.py
+
+# In another terminal, start ngrok
 ngrok http 5000
 ```
 
-Then configure your Twilio phone numbers to use the ngrok URLs.
+**Method 2: Using configuration file**
+```bash
+# Copy the example config
+cp ngrok.yml.example ~/.config/ngrok/ngrok.yml
+# Edit and add your authtoken
+nano ~/.config/ngrok/ngrok.yml
+
+# Start the tunnel with config
+ngrok start talktojesus
+```
+
+### Access Your Public URL
+
+After starting ngrok, you'll see output like:
+```
+Session Status                online
+Account                       your@email.com
+Version                       3.x.x
+Region                        United States (us)
+Forwarding                    https://abc123.ngrok.io -> http://localhost:5000
+```
+
+Your app is now accessible at the `https://abc123.ngrok.io` URL!
+
+### View Requests in Real-Time
+
+Open the ngrok web interface at `http://localhost:4040` to:
+- Inspect HTTP requests and responses
+- Replay requests
+- View request/response details
+
+### Twilio Setup (Optional for SMS/Voice)
+
+To use Twilio features with your ngrok URL:
+
+1. **Create a Twilio account** at [twilio.com](https://www.twilio.com)
+2. **Get a Twilio phone number** with SMS and Voice capabilities
+3. **Configure webhooks** in Twilio Console:
+   - **SMS Webhook**: `https://your-ngrok-url.ngrok.io/sms`
+   - **Voice Webhook**: `https://your-ngrok-url.ngrok.io/voice`
+4. **Add credentials** to `.env` file (copy from `.env.example`)
+
+Now you can send SMS messages or make calls to your Twilio number, and they'll be handled by your local application!
+
+## Docker Commands
+
+### Build the Docker image:
+```bash
+docker build -t talktojesus-ai .
+```
+
+### Run the container:
+```bash
+docker run -d -p 5000:5000 --name talktojesus-ai talktojesus-ai
+```
+
+### Using Docker Compose (Recommended):
+```bash
+# Start the application
+docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop the application
+docker-compose down
+
+# Rebuild and restart
+docker-compose up -d --build
+```
+
+### Access the container:
+```bash
+docker exec -it talktojesus-ai /bin/bash
+```
 
 ## Project Structure
 
 ```
 talktojesus-ai/
-├── app.py              # Main Flask application
-├── requirements.txt    # Python dependencies
-└── README.md          # This file
+├── app.py                # Main Flask application
+├── requirements.txt      # Python dependencies
+├── Dockerfile            # Docker container configuration
+├── docker-compose.yml    # Docker Compose orchestration
+├── .dockerignore         # Files to exclude from Docker builds
+├── .gitignore            # Git ignore rules
+├── .env.example          # Environment variable template
+├── setup_ngrok.sh        # ngrok installation script
+├── ngrok.yml.example     # ngrok configuration template
+└── README.md             # This file
 ```
 
 ## Development

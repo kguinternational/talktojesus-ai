@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  talktojesus-api:
+    build: .
+    container_name: talktojesus-ai
+    ports:
+      - "5000:5000"
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=True
+    volumes:
+      - .:/app
+    restart: unless-stopped
