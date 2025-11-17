@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  talktojesus-api:
+    build: .
+    container_name: talktojesus-ai
+    ports:
+      - "5000:5000"      # Flask app
+      - "4040:4040"      # ngrok web interface
+    environment:
+      - FLASK_ENV=development
+      - FLASK_DEBUG=True
+      - NGROK_AUTHTOKEN=${NGROK_AUTHTOKEN:-}
+    volumes:
+      - .:/app
+    restart: unless-stopped
