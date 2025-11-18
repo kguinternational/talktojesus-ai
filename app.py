@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, Response, render_template, session
+from flask import Flask, request, jsonify, render_template
 from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
 import os
