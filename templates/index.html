@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Talk to Jesus AI - Interactive Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .feature-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .feature-card h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+        
+        .feature-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-bottom: 30px;
+        }
+        
+        .demo-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+        
+        .chat-container {
+            border: 2px solid #667eea;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #f8f9fa;
+            min-height: 300px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            max-width: 70%;
+            word-wrap: break-word;
+        }
+        
+        .user-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+            text-align: right;
+        }
+        
+        .ai-message {
+            background: #e9ecef;
+            color: #333;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        input[type="text"], textarea {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        input[type="text"]:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            padding: 12px 30px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.1s ease;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        button:active {
+            transform: scale(0.98);
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .endpoint-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .endpoint-info code {
+            background: #e9ecef;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .devotional-card {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+        
+        .devotional-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+        
+        .devotional-card .verse {
+            font-style: italic;
+            color: #555;
+            margin: 10px 0;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 5px;
+        }
+        
+        .devotional-card .reflection {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .tab-button {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-button:hover, .tab-button.active {
+            background: white;
+            color: #667eea;
+        }
+        
+        .verse-display {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-size: 1.1em;
+            line-height: 1.8;
+            color: #333;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 100px;
+        }
+        
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.85em;
+            margin-left: 10px;
+        }
+        
+        footer {
+            text-align: center;
+            color: white;
+            padding: 20px;
+            margin-top: 40px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🙏 Talk to Jesus AI</h1>
+            <p class="subtitle">Interactive AI allowing communication with a Jesus persona via text, phone, and video</p>
+            <div style="margin-top: 20px;">
+                <a href="/api/video/avatar" style="padding: 12px 25px; background: rgba(255,255,255,0.3); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; border: 2px solid white; display: inline-block; transition: all 0.3s;">
+                    🎥 Try Interactive Video Avatar (NEW!)
+                </a>
+            </div>
+        </header>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h2>💬 SMS Messages</h2>
+                <p>Send text messages and receive spiritual guidance through SMS powered by Twilio integration.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h2>📞 Voice Calls</h2>
+                <p>Have spoken conversations with voice transcription and text-to-speech responses via Twilio Voice.</p>
+            </div>
+            
+            <div class="feature-card">
+                <h2>🎥 Video Meetings</h2>
+                <p>Schedule Zoom or Google Meet sessions for face-to-face spiritual conversations (Coming Soon).</p>
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>💬 Interactive Demo - SMS Endpoint</h2>
+            <p>Try out the SMS endpoint directly from your browser:</p>
+            
+            <div class="chat-container" id="chatContainer">
+                <div class="message ai-message">
+                    <strong>Jesus AI:</strong> Peace be with you. How may I help you today?
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <input type="text" id="messageInput" placeholder="Type your message here..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()">Send Message</button>
+            </div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>POST /sms</code><br>
+                <strong>Format:</strong> Twilio-compatible TwiML response
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📞 Voice Endpoint Demo</h2>
+            <p>Test the voice endpoint (simulating Twilio voice transcription):</p>
+            
+            <div class="input-group">
+                <input type="text" id="voiceInput" placeholder="Enter spoken text to transcribe...">
+                <button onclick="testVoice()">Test Voice</button>
+            </div>
+            
+            <div id="voiceStatus" class="status"></div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>POST /voice</code><br>
+                <strong>Format:</strong> Returns TwiML with spoken response
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>🎥 Video Meeting Endpoints</h2>
+            <p>Create video meeting sessions (placeholder implementation):</p>
+            
+            <div class="input-group">
+                <input type="text" id="zoomTopic" placeholder="Meeting topic..." value="Spiritual Guidance Session">
+                <button onclick="createZoomMeeting()">Create Zoom Meeting</button>
+            </div>
+            
+            <div id="zoomStatus" class="status"></div>
+            
+            <div class="input-group" style="margin-top: 20px;">
+                <button onclick="createGoogleMeet()" style="flex: 1;">Create Google Meet</button>
+            </div>
+            
+            <div id="meetStatus" class="status"></div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoints:</strong> <code>POST /create_zoom_meeting</code>, <code>POST /create_google_meet</code><br>
+                <strong>Note:</strong> These are placeholder endpoints. Integration requires API credentials.
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📿 Submit a Prayer Request</h2>
+            <p>Share what's on your heart, and receive spiritual guidance and encouragement:</p>
+            
+            <div class="input-group" style="margin-top: 20px;">
+                <input type="text" id="prayerName" placeholder="Your name (optional)..." value="Anonymous">
+            </div>
+            
+            <div style="margin-top: 15px;">
+                <textarea id="prayerText" placeholder="Share your prayer request..."></textarea>
+            </div>
+            
+            <button onclick="submitPrayer()" style="margin-top: 15px; width: 100%;">Submit Prayer Request</button>
+            
+            <div id="prayerStatus" class="status"></div>
+            <div id="prayerResponse" style="display: none; margin-top: 15px;"></div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>POST /api/prayer</code><br>
+                <strong>New Feature:</strong> AI-powered prayer support with sentiment detection
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>📖 Daily Devotional</h2>
+            <p>Receive daily spiritual guidance and biblical wisdom:</p>
+            
+            <button onclick="getDevotion()" style="margin-top: 15px;">Get Today's Devotional</button>
+            
+            <div id="devotionalContent" style="display: none; margin-top: 20px;"></div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>GET /api/devotional</code><br>
+                <strong>New Feature:</strong> Daily devotional messages with Bible verses and reflections
+            </div>
+        </div>
+        
+        <div class="demo-section">
+            <h2>✝️ Bible Verse Inspiration <span class="badge">NEW</span></h2>
+            <p>Get inspired with Bible verses by category:</p>
+            
+            <div class="tab-container">
+                <button class="tab-button" onclick="getVerseByCategory('love')">Love</button>
+                <button class="tab-button" onclick="getVerseByCategory('forgiveness')">Forgiveness</button>
+                <button class="tab-button" onclick="getVerseByCategory('faith')">Faith</button>
+                <button class="tab-button" onclick="getVerseByCategory('guidance')">Guidance</button>
+                <button class="tab-button" onclick="getVerseByCategory('strength')">Strength</button>
+                <button class="tab-button" onclick="getVerseByCategory('peace')">Peace</button>
+                <button class="tab-button" onclick="getVerseByCategory('hope')">Hope</button>
+                <button class="tab-button active" onclick="getVerseByCategory('')">Random</button>
+            </div>
+            
+            <div id="verseDisplay" class="verse-display">
+                Click a category above to receive biblical inspiration
+            </div>
+            
+            <div class="endpoint-info">
+                <strong>Endpoint:</strong> <code>GET /api/verse?category={category}</code><br>
+                <strong>New Feature:</strong> Categorized Bible verses with full scripture references
+            </div>
+        </div>
+        
+        <footer>
+            <p>Built with Flask, Twilio, and ❤️</p>
+            <p style="margin-top: 10px; opacity: 0.8;">A spiritual AI companion for meaningful conversations</p>
+            <p style="margin-top: 15px; font-size: 0.9em;">
+                <strong>New Features:</strong> Sentiment Detection • Prayer Requests • Daily Devotionals • 
+                Bible Verse Library • Rate Limiting • Conversation History
+            </p>
+        </footer>
+    </div>
+    
+    <script>
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            const chatContainer = document.getElementById('chatContainer');
+            
+            // Add user message
+            const userMsg = document.createElement('div');
+            userMsg.className = 'message user-message';
+            userMsg.innerHTML = `<strong>You:</strong> ${escapeHtml(message)}`;
+            chatContainer.appendChild(userMsg);
+            
+            // Clear input
+            input.value = '';
+            
+            // Send to server
+            fetch('/sms', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `Body=${encodeURIComponent(message)}`
+            })
+            .then(response => response.text())
+            .then(twiml => {
+                // Parse TwiML to get message text
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(twiml, 'text/xml');
+                const messageText = xmlDoc.getElementsByTagName('Message')[0]?.textContent || 'No response';
+                
+                // Add AI response
+                const aiMsg = document.createElement('div');
+                aiMsg.className = 'message ai-message';
+                aiMsg.innerHTML = `<strong>Jesus AI:</strong> ${escapeHtml(messageText)}`;
+                chatContainer.appendChild(aiMsg);
+                
+                // Scroll to bottom
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const errorMsg = document.createElement('div');
+                errorMsg.className = 'message ai-message';
+                errorMsg.innerHTML = '<strong>Error:</strong> Failed to get response';
+                errorMsg.style.background = '#f8d7da';
+                chatContainer.appendChild(errorMsg);
+            });
+        }
+        
+        function testVoice() {
+            const input = document.getElementById('voiceInput');
+            const message = input.value.trim();
+            const status = document.getElementById('voiceStatus');
+            
+            if (!message) {
+                showStatus('voiceStatus', 'Please enter some text', 'error');
+                return;
+            }
+            
+            fetch('/voice', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `SpeechResult=${encodeURIComponent(message)}`
+            })
+            .then(response => response.text())
+            .then(twiml => {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(twiml, 'text/xml');
+                const spokenText = xmlDoc.getElementsByTagName('Say')[0]?.textContent || 'No response';
+                showStatus('voiceStatus', `Voice Response: "${spokenText}"`, 'success');
+                input.value = '';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('voiceStatus', 'Failed to get voice response', 'error');
+            });
+        }
+        
+        function createZoomMeeting() {
+            const topic = document.getElementById('zoomTopic').value;
+            
+            fetch('/create_zoom_meeting', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ topic: topic })
+            })
+            .then(response => response.json())
+            .then(data => {
+                showStatus('zoomStatus', `Zoom: ${data.message}`, response.status === 200 ? 'success' : 'error');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('zoomStatus', 'Failed to create Zoom meeting', 'error');
+            });
+        }
+        
+        function createGoogleMeet() {
+            fetch('/create_google_meet', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({})
+            })
+            .then(response => response.json())
+            .then(data => {
+                showStatus('meetStatus', `Google Meet: ${data.message}`, response.status === 200 ? 'success' : 'error');
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('meetStatus', 'Failed to create Google Meet', 'error');
+            });
+        }
+        
+        function showStatus(elementId, message, type) {
+            const status = document.getElementById(elementId);
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+            
+            setTimeout(() => {
+                status.style.display = 'none';
+            }, 5000);
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // New feature: Submit prayer request
+        function submitPrayer() {
+            const name = document.getElementById('prayerName').value.trim() || 'Anonymous';
+            const prayer = document.getElementById('prayerText').value.trim();
+            
+            if (!prayer) {
+                showStatus('prayerStatus', 'Please enter your prayer request', 'error');
+                return;
+            }
+            
+            fetch('/api/prayer', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, prayer: prayer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showStatus('prayerStatus', data.message, 'success');
+                    const responseDiv = document.getElementById('prayerResponse');
+                    responseDiv.innerHTML = `
+                        <div class="devotional-card">
+                            <h3>🙏 Response</h3>
+                            <p class="verse">${escapeHtml(data.response)}</p>
+                            <p class="reflection">${escapeHtml(data.encouragement)}</p>
+                        </div>
+                    `;
+                    responseDiv.style.display = 'block';
+                    document.getElementById('prayerText').value = '';
+                } else {
+                    showStatus('prayerStatus', data.error || 'Failed to submit prayer', 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showStatus('prayerStatus', 'Failed to submit prayer request', 'error');
+            });
+        }
+        
+        // New feature: Get daily devotional
+        function getDevotion() {
+            fetch('/api/devotional')
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const devotional = data.devotional;
+                    const contentDiv = document.getElementById('devotionalContent');
+                    contentDiv.innerHTML = `
+                        <div class="devotional-card">
+                            <h3>📖 ${escapeHtml(devotional.title)}</h3>
+                            <p><strong>Scripture:</strong> ${escapeHtml(devotional.verse)}</p>
+                            <p class="verse">"${escapeHtml(devotional.content)}"</p>
+                            <p class="reflection"><strong>Reflection:</strong> ${escapeHtml(devotional.reflection)}</p>
+                        </div>
+                    `;
+                    contentDiv.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Failed to load devotional');
+            });
+        }
+        
+        // New feature: Get Bible verse by category
+        function getVerseByCategory(category) {
+            const url = category ? `/api/verse?category=${category}` : '/api/verse';
+            
+            // Update active tab
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const verseDiv = document.getElementById('verseDisplay');
+                    verseDiv.innerHTML = `
+                        <strong>${category ? category.charAt(0).toUpperCase() + category.slice(1) : 'Inspiration'}:</strong><br>
+                        ${escapeHtml(data.verse)}
+                    `;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('verseDisplay').textContent = 'Failed to load verse';
+            });
+        }
+    </script>
+</body>
+</html>

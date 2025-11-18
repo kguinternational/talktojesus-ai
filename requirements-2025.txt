@@ -1,0 +1,107 @@
+# Talk to Jesus AI - 2025 Technology Stack Requirements
+# Modern, high-performance, production-ready dependencies
+
+# ============================================================================
+# CORE WEB FRAMEWORK (FastAPI - Next Generation)
+# ============================================================================
+fastapi[all]>=0.109.0          # Modern async web framework (7x faster than Flask)
+uvicorn[standard]>=0.27.0      # Lightning-fast ASGI server
+python-multipart>=0.0.6        # Form data parsing
+pydantic>=2.5.0                # Data validation with type hints
+pydantic-settings>=2.1.0       # Settings management
+
+# ============================================================================
+# AI & MACHINE LEARNING (2025 LLMs)
+# ============================================================================
+openai>=1.10.0                 # GPT-4, DALL-E, Whisper, TTS
+anthropic>=0.18.0              # Claude Sonnet 3.5 (best reasoning)
+google-generativeai>=0.3.2     # Gemini 2.0 (multimodal)
+langchain>=0.1.0               # LLM orchestration & RAG
+langchain-openai>=0.0.5        # OpenAI integration
+langchain-anthropic>=0.0.1     # Anthropic integration
+transformers>=4.37.0           # Hugging Face models (emotion detection)
+torch>=2.2.0                   # PyTorch for local models
+
+# ============================================================================
+# VECTOR DATABASES & RAG (Retrieval-Augmented Generation)
+# ============================================================================
+pinecone-client>=3.0.0         # Managed vector database
+qdrant-client>=1.7.0           # Open-source vector database
+chromadb>=0.4.22               # Lightweight vector database
+sentence-transformers>=2.3.0   # Embedding models
+
+# ============================================================================
+# DATABASES & CACHING
+# ============================================================================
+asyncpg>=0.29.0                # Async PostgreSQL driver
+psycopg2-binary>=2.9.9         # PostgreSQL adapter
+sqlalchemy>=2.0.25             # ORM with async support
+alembic>=1.13.1                # Database migrations
+redis>=5.0.1                   # Redis client (caching & sessions)
+aioredis>=2.0.1                # Async Redis
+
+# ============================================================================
+# COMMUNICATION & INTEGRATIONS
+# ============================================================================
+twilio>=8.11.0                 # SMS & Voice (updated)
+websockets>=12.0               # WebSocket support
+httpx>=0.26.0                  # Async HTTP client
+aiohttp>=3.9.1                 # Async HTTP
+
+# ============================================================================
+# AUTHENTICATION & SECURITY
+# ============================================================================
+python-jose[cryptography]>=3.3.0  # JWT tokens
+passlib[bcrypt]>=1.7.4         # Password hashing
+python-multipart>=0.0.6        # OAuth2 form data
+fastapi-limiter>=0.1.5         # Rate limiting
+
+# ============================================================================
+# MONITORING & OBSERVABILITY
+# ============================================================================
+prometheus-fastapi-instrumentator>=6.1.0  # Prometheus metrics
+opentelemetry-api>=1.22.0      # OpenTelemetry tracing
+opentelemetry-sdk>=1.22.0      # OpenTelemetry SDK
+opentelemetry-instrumentation-fastapi>=0.43b0  # FastAPI instrumentation
+sentry-sdk[fastapi]>=1.40.0    # Error tracking
+
+# ============================================================================
+# UTILITIES
+# ============================================================================
+python-dotenv>=1.0.0           # Environment variables
+pydantic-settings>=2.1.0       # Settings management
+python-dateutil>=2.8.2         # Date utilities
+pytz>=2023.3                   # Timezone support
+
+# ============================================================================
+# DEVELOPMENT & TESTING
+# ============================================================================
+pytest>=7.4.4                  # Testing framework
+pytest-asyncio>=0.23.3         # Async test support
+pytest-cov>=4.1.0              # Coverage reporting
+httpx>=0.26.0                  # Test client
+faker>=22.0.0                  # Fake data generation
+black>=24.1.0                  # Code formatting
+ruff>=0.1.14                   # Fast linter (Rust-based)
+mypy>=1.8.0                    # Type checking
+
+# ============================================================================
+# OPTIONAL: VOICE & VIDEO
+# ============================================================================
+# openai-whisper>=20231117     # Speech-to-text (optional, large)
+# elevenlabs>=0.2.27           # High-quality TTS (optional)
+# deepgram-sdk>=3.0.0          # Real-time transcription (optional)
+
+# ============================================================================
+# NOTES
+# ============================================================================
+# To install all dependencies:
+#   pip install -r requirements-2025.txt
+#
+# For production (minimal):
+#   pip install fastapi[all] uvicorn openai asyncpg redis
+#
+# For development:
+#   pip install -r requirements-2025.txt
+#
+# Docker: Use Python 3.11+ base image for best performance
