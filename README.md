@@ -78,13 +78,39 @@ curl -X POST http://localhost:5000/voice \
   -d "SpeechResult=I need guidance"
 ```
 
+## Docker Deployment
+
+### Using Docker
+
+Build and run with Docker:
+```bash
+docker build -t talktojesus-ai .
+docker run -p 5000:5000 -e OPENAI_API_KEY=your_key_here talktojesus-ai
+```
+
+### Using Docker Compose
+
+```bash
+# Make sure .env file exists with your API keys
+docker-compose up -d
+```
+
 ## Deployment
 
 This application can be deployed to any platform that supports Python Flask applications:
-- Heroku
-- AWS Elastic Beanstalk
-- Google Cloud Platform
-- Docker containers
+- **Docker** - Use the provided Dockerfile and docker-compose.yml
+- **Heroku** - Deploy directly from Git
+- **AWS Elastic Beanstalk** - Python platform
+- **Google Cloud Platform** - App Engine or Cloud Run
+- **Railway** - Auto-detect Python application
+
+### Environment Variables for Production
+
+Ensure these environment variables are set in your production environment:
+- `OPENAI_API_KEY` (required)
+- `FLASK_ENV=production`
+- `FLASK_DEBUG=False`
+- `PORT` (if required by platform)
 
 ## License
 
