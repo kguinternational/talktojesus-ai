@@ -2,6 +2,25 @@
 
 Interactive AI that allows users to communicate with a Jesus persona via text, phone calls, Zoom &amp; Google Meet meetings. Uses OpenAI for intelligent responses, Twilio for SMS/voice, and Zoom/Google Meet APIs.
 
+## Quick Start
+
+```bash
+# Clone and setup
+git clone https://github.com/kguinternational/talktojesus-ai.git
+cd talktojesus-ai
+pip install -r requirements.txt
+
+# Configure
+cp .env.example .env
+# Edit .env and add your OPENAI_API_KEY
+
+# Run
+python app.py
+
+# Test
+python test_api.py
+```
+
 ## Features
 
 - 🤖 AI-powered Jesus persona using OpenAI GPT models
@@ -63,6 +82,13 @@ Set the following environment variables in your `.env` file:
 - `PORT` - Server port (default: 5000)
 
 ## Usage
+
+### Running Tests
+
+Use the provided test script to verify all endpoints:
+```bash
+python test_api.py
+```
 
 ### Testing SMS Endpoint
 
