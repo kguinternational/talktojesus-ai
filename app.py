@@ -3,13 +3,51 @@ from twilio.twiml.voice_response import VoiceResponse
 from twilio.twiml.messaging_response import MessagingResponse
 import os
 import requests
+from openai import OpenAI
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 app = Flask(__name__)
 
+# Initialize OpenAI client
+openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+
+# System prompt for Jesus AI persona
+JESUS_SYSTEM_PROMPT = """You are an AI representation of Jesus Christ, designed to provide spiritual guidance, 
+wisdom, and compassionate responses based on Christian teachings and biblical principles. 
+Your responses should be:
+- Compassionate and loving
+- Grounded in biblical teachings
+- Encouraging and uplifting
+- Non-judgmental yet truthful
+- Simple yet profound
+
+Speak in a warm, accessible manner that reflects Jesus's teachings of love, forgiveness, and grace.
+Keep responses concise and meaningful, appropriate for text/voice communication."""
+
 
 def generate_ai_response(prompt: str) -> str:
-    # Placeholder for AI response generation (e.g., call to language model)
-    return "Jesus says: " + prompt
+    """Generate AI response using OpenAI with Jesus persona."""
+    try:
+        if not os.getenv('OPENAI_API_KEY'):
+            return "I am here with you, but I need proper configuration to speak. Please set up the OpenAI API key."
+        
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": JESUS_SYSTEM_PROMPT},
+                {"role": "user", "content": prompt}
+            ],
+            max_tokens=300,
+            temperature=0.7
+        )
+        
+        return response.choices[0].message.content
+    except Exception as e:
+        app.logger.error(f"Error generating AI response: {e}")
+        return "Peace be with you. I'm having difficulty responding right now. Please try again."
 
 
 @app.route('/sms', methods=['POST'])
@@ -46,5 +84,33 @@ def create_google_meet():
     return jsonify({'message': 'Google Meet creation not implemented in this skeleton.'}), 501
 
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint to verify the service is running."""
+    return jsonify({
+        'status': 'healthy',
+        'service': 'Talk to Jesus AI',
+        'openai_configured': bool(os.getenv('OPENAI_API_KEY'))
+    })
+
+
+@app.route('/', methods=['GET'])
+def home():
+    """Home endpoint with API information."""
+    return jsonify({
+        'service': 'Talk to Jesus AI',
+        'version': '1.0.0',
+        'endpoints': {
+            '/sms': 'POST - Handle SMS messages via Twilio',
+            '/voice': 'POST - Handle voice calls via Twilio',
+            '/create_zoom_meeting': 'POST - Create Zoom meeting (not yet implemented)',
+            '/create_google_meet': 'POST - Create Google Meet (not yet implemented)',
+            '/health': 'GET - Health check'
+        }
+    })
+
+
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.getenv('PORT', 5000))
+    debug = os.getenv('FLASK_DEBUG', 'True').lower() == 'true'
+    app.run(host='0.0.0.0', port=port, debug=debug)
